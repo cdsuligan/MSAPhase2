@@ -39,12 +39,12 @@ namespace Contoso_Bank
                             { "THB", 3}, { "TRY", 3}, { "ZAR", 1}, { "EUR", 0}, { "USD", 1} };
 
 
-                string endOutput = "Welcome to Contoso Bank! Would you like currency rates or stocks?";
+                string endOutput = "Welcome to Contoso Bank! Would you like to 'convert currencies' or 'view stocks'?";
 
                 // calculate something for us to return
                 if (userData.GetProperty<bool>("SentGreeting"))
                 {
-                    endOutput = "Hi again! Welcome to Contoso Bank's currency exchange rates! Would you like currency rates or stocks?";
+                    endOutput = "Hi again! What can I do for you, 'convert currencies' or 'view stocks'?";
                 }
 
                 else
@@ -63,9 +63,9 @@ namespace Contoso_Bank
                     await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
                 }
 
-                if (userMessage.ToLower().Contains("currency rates"))
+                if (userMessage.ToLower().Contains("convert currencies"))
                 { //The user wants Currency Exchange
-                    endOutput = "Currency Rates is: " + userMessage + ". What is your base currency code?";
+                    endOutput = "What is the original currency code?";
                     userData.SetProperty("UserWantsCurrencyRates", true);//Sets "UserWantsCurrencyRates" to TRUE
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
@@ -82,20 +82,22 @@ namespace Contoso_Bank
                         userData.SetProperty("UserWantsCurrencyRates", false);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
-                        endOutput = "What is the new currency?";
+                        endOutput = "What is the new currency code?";
 
                     }
                 }
 
                 if (userData.GetProperty<string>("BaseCurrency") != null) //Checks if BaseCurrency exists
                 {
-                    if ((userMessage.Length == 3) & (userMessage != userData.GetProperty<string>("BaseCurrency") & (userData.GetProperty<string>("BaseCurrency").Length ==3)))
+                    if ((userMessage.Length == 3) & (userMessage != userData.GetProperty<string>("BaseCurrency") & (userData.GetProperty<string>("BaseCurrency").Length == 3)))
                     {
                         if (currencyCodes.ContainsKey(userMessage.ToUpper())) //Checks if valid Currency Code
                         {
                             string baseCurrency = userData.GetProperty<string>("BaseCurrency");
                             string newCurrency = userMessage;
                             double result = 0.0;
+
+
 
                             CurrencyExchange.RootObject rootObject;
                             HttpClient client = new HttpClient();
@@ -104,24 +106,17 @@ namespace Contoso_Bank
 
                             rootObject = JsonConvert.DeserializeObject<CurrencyExchange.RootObject>(x);
 
+                            Dictionary<string, double> currencyCodesRootObjects = new Dictionary<string, double>(){
+                                { "AUD", rootObject.rates.AUD}, { "BGN", rootObject.rates.BGN}, { "BRL", rootObject.rates.BRL}, { "CAD", rootObject.rates.CAD}, { "CHF", rootObject.rates.CHF}, { "CNY", rootObject.rates.CNY}, { "CZK", rootObject.rates.CZK}, { "DKK", rootObject.rates.DKK}, { "GBP", rootObject.rates.GBP},
+    { "HKD", rootObject.rates.HKD}, { "HRK", rootObject.rates.HRK}, { "HUF", rootObject.rates.HUF}, { "IDR", rootObject.rates.IDR}, { "ILS", rootObject.rates.ILS}, { "INR", rootObject.rates.INR}, { "JPY", rootObject.rates.JPY}, { "KRW", rootObject.rates.KRW}, { "MXN", rootObject.rates.MXN},
+    { "MYR", rootObject.rates.MYR}, { "NOK", rootObject.rates.NOK}, { "NZD", rootObject.rates.NZD}, { "PHP", rootObject.rates.PHP}, { "PLN", rootObject.rates.PLN}, { "RON", rootObject.rates.RON}, { "RUB", rootObject.rates.RUB}, { "SEK", rootObject.rates.SEK}, { "SGD", rootObject.rates.SGD},
+    { "THB", rootObject.rates.THB}, { "TRY", rootObject.rates.TRY}, { "ZAR", rootObject.rates.ZAR}, { "EUR", rootObject.rates.EUR}, { "USD", rootObject.rates.USD}
+                            };
+
+                            result = currencyCodesRootObjects[newCurrency.ToUpper()];
 
 
-                            if (newCurrency.ToUpper() == "AUD")
-                            {
-                                result = rootObject.rates.AUD;
-                            }
-
-                            else if (newCurrency.ToUpper() == "BGN")
-                            {
-                                result = rootObject.rates.BGN;
-                            }
-
-                            else if (newCurrency.ToUpper() == "BRL")
-                            {
-                                result = rootObject.rates.BRL;
-                            }
-
-                            endOutput = "BaseCurrency is: " + baseCurrency + " newCurrency is: " + userMessage + " and the result is: " + result.ToString();
+                            endOutput = "1 " + baseCurrency.ToUpper() + " is equivalent to " + result.ToString() + " " + newCurrency.ToUpper() + ".";
 
                             userData.SetProperty<string>("BaseCurrency", "");
                             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
@@ -133,14 +128,7 @@ namespace Contoso_Bank
                             endOutput = "Invalid currency code. Please try again.";
                         }
                     }
-
                 }
-
-
-
-
-
-
 
 
                 Activity infoReply = activity.CreateReply(endOutput);
