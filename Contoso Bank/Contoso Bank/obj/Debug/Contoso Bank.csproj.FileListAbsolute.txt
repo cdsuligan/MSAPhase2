@@ -1,0 +1,39 @@
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Bot Application1.dll.config
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Bot Application1.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Bot Application1.pdb
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Autofac.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Chronic.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.Bot.Builder.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.Bot.Connector.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.IdentityModel.Protocol.Extensions.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.Rest.ClientRuntime.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.WindowsAzure.Configuration.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Newtonsoft.Json.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\System.Net.Http.Formatting.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\System.Web.Http.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\System.Web.Http.WebHost.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Autofac.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.Bot.Builder.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.Bot.Connector.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.IdentityModel.Protocol.Extensions.pdb
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.IdentityModel.Protocol.Extensions.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.Rest.ClientRuntime.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Microsoft.WindowsAzure.Configuration.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\Newtonsoft.Json.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\System.IdentityModel.Tokens.Jwt.pdb
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\System.IdentityModel.Tokens.Jwt.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\System.Net.Http.Formatting.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\System.Web.Http.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\System.Web.Http.WebHost.xml
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\ar\Microsoft.Bot.Builder.resources.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\en\Microsoft.Bot.Builder.resources.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\es\Microsoft.Bot.Builder.resources.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\fa\Microsoft.Bot.Builder.resources.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\fr\Microsoft.Bot.Builder.resources.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\ja\Microsoft.Bot.Builder.resources.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\ru\Microsoft.Bot.Builder.resources.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\bin\zh-hans\Microsoft.Bot.Builder.resources.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\obj\Debug\Contoso Bank.csprojResolveAssemblyReference.cache
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\obj\Debug\Bot Application1.dll
+C:\Users\Desiree\Documents\University 2016\MSA\Phase 2\Assessment\Contoso Bank\Contoso Bank\obj\Debug\Bot Application1.pdb

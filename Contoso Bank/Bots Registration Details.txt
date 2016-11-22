@@ -1,0 +1,8 @@
+http://localhost:3979/
+http://contosobankcsul037.azurewebsites.net
+
+App name: DesireeBotsProject
+App ID: b4a836c0-4368-4234-9447-0ffa5a607969
+App password: rih1VmKN984ANhqSdjk1jH5
+
+
