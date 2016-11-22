@@ -51,10 +51,6 @@ namespace Contoso_Bank
                 {
                     userData.SetProperty("SentGreeting", true);
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                    //^Syncing updated userData
-                    //If we didn't sync up, the changes will not be reflected if we asked for the user data again. 
-                    //In our first greeting, the Bot will say "Hello".
-                    //When we greet the Bot again, it will say "Hello again.".
                 }
 
                 if (userMessage.ToLower().Contains("clear"))
@@ -65,10 +61,45 @@ namespace Contoso_Bank
 
                 if (userMessage.ToLower().Contains("convert currencies"))
                 { //The user wants Currency Exchange
-                    endOutput = "What is the original currency code?";
-                    userData.SetProperty("UserWantsCurrencyRates", true);//Sets "UserWantsCurrencyRates" to TRUE
+                    endOutput = "Convert currencies from _?";
+                    userData.SetProperty("UserWantsCurrencyRates", true); //Sets "UserWantsCurrencyRates" to TRUE
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                }
 
+                if (userMessage.Length > 13)
+                {
+                    if (userMessage.ToLower().Substring(0, 12).Equals("set original")) //The user wants to set a default original (base) currency code
+                    {
+                        string original = userMessage.Substring(13);
+                        if (currencyCodes.ContainsKey(original.ToUpper()))
+                        {
+                            userData.SetProperty<string>("DefaultBase", original.ToUpper());   //Setting a default original (base) currency code
+                            await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                            string defaultBase = userData.GetProperty<string>("DefaultBase");
+                            endOutput = "Original currency is now set to " + defaultBase + ".";
+                        }
+
+                        else {
+                            endOutput = "Invalid currency code. Please try again.";
+                        }
+                    }
+                }
+
+
+                if (userMessage.ToLower().Equals("original")) {
+                    string original = userData.GetProperty<string>("DefaultBase");   //Gets default original (base) currency code
+
+                    if (original == null)
+                    {
+                        endOutput = "Original currency not assigned.";
+                    }
+
+                    else {
+                        userData.SetProperty<string>("BaseCurrency", original); //Setting the BaseCurrency to userMessage (the user's input)
+                        await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+
+                        endOutput = "Convert from " + original + " to _?";
+                    }
                 }
 
 
@@ -82,7 +113,9 @@ namespace Contoso_Bank
                         userData.SetProperty("UserWantsCurrencyRates", false);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
-                        endOutput = "What is the new currency code?";
+                        string baseCurrency = userData.GetProperty<string>("BaseCurrency");
+
+                        endOutput = "Convert from " + baseCurrency + " to _?";
 
                     }
                 }
@@ -96,8 +129,6 @@ namespace Contoso_Bank
                             string baseCurrency = userData.GetProperty<string>("BaseCurrency");
                             string newCurrency = userMessage;
                             double result = 0.0;
-
-
 
                             CurrencyExchange.RootObject rootObject;
                             HttpClient client = new HttpClient();
@@ -114,7 +145,6 @@ namespace Contoso_Bank
                             };
 
                             result = currencyCodesRootObjects[newCurrency.ToUpper()];
-
 
                             endOutput = "1 " + baseCurrency.ToUpper() + " is equivalent to " + result.ToString() + " " + newCurrency.ToUpper() + ".";
 
@@ -142,14 +172,7 @@ namespace Contoso_Bank
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }
-
-
-
-
-
-
-
-
+        
         private Activity HandleSystemMessage(Activity message)
         {
             if (message.Type == ActivityTypes.DeleteUserData)
