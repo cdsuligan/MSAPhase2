@@ -196,17 +196,14 @@ namespace Contoso_Bank
                     userData.SetProperty<bool>("NeedsACard", false);
                 }
 
-                //USER WANTS TO CREATE A NEW BANK ACCOUNT
+                
                 if (userMessage.Length > 14) {
-
-                   
-
-                    if (userMessage.ToLower().Substring(0, 14).Equals("create account")) {
+                    //USER WANTS TO CREATE A NEW BANK ACCOUNT
+                    if (userMessage.ToLower().Substring(0, 14).Equals("create account"))
+                    {
                         List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
                         int bankAcctSize = bankaccounts.Count();
-                        //endOutput = bankaccounts.ToString() + " bankAcctSize is: " + bankAcctSize;
 
-                        //endOutput = "";
                         int newAcctNo;
                         string fullName = userMessage.Substring(14);
                         string[] fullNameList = fullName.Split(' ');
@@ -216,8 +213,6 @@ namespace Contoso_Bank
                         int newID = 0;
                         int intID = 0;
 
-                        //List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
-                        //int 
                         Random rnd = new Random();
                         newAcctNo = rnd.Next(100000, 1000000); // Creates a number between 100000 and 999999
                         bool newAcctNoIsUnique = false;
@@ -237,18 +232,17 @@ namespace Contoso_Bank
 
                                 else
                                 {
-                                    newAcctNo = rnd.Next(100000, 1000000); // creates a number between 100000 and 999999
+                                    newAcctNo = rnd.Next(100000, 1000000); // Creates a number between 100000 and 999999
                                     newAcctNoIsUnique = false;
                                     bankAcctSize = bankaccounts.Count;
                                     break;
                                 }
 
                                 int.TryParse(ba.ID, out intID);
-                                if (intID > newID) {
+                                if (intID > newID)
+                                {
                                     newID = intID;
                                 }
-
-                                //endOutput += ba.AcctNo.ToString() + " ";
                             }
                         }
                         newID += 1;
@@ -265,11 +259,30 @@ namespace Contoso_Bank
 
                         await AzureManager.AzureManagerInstance.CreateNewAccount(bankaccount);
 
-                        endOutput = "Congratulations, " + firstName + " " + lastName + "! Your new account number is " + newAcctNo.ToString() 
+                        endOutput = "Congratulations, " + firstName + " " + lastName + "! Your new account number is " + newAcctNo.ToString()
                             + " and your current balance is: $0.00.";
-                        
-                        userData.SetProperty<bool>("NeedsACard", false);
+
                     }
+
+                    //USER WANTS TO DELETE THEIR ACCOUNT
+                    else if (userMessage.ToLower().Substring(0, 14).Equals("delete account"))
+                    {
+                        List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
+                        string acctNo = userMessage.Substring(15);
+
+                        foreach (BankAccount ba in bankaccounts)
+                        {
+                            if (ba.AcctNo == acctNo.ToString())
+                            {
+                                await AzureManager.AzureManagerInstance.DeleteAccount(ba);
+                                endOutput = "Hi " + " " + ba.FirstName + " " + ba.LastName + ", your remaining balance of " + ba.Balance.ToString() +
+                                    " has now been transferred to your secondary account. Your bank account with account number: " + ba.AcctNo
+                                    + " has now been closed.";
+                            }
+                        }
+                    }
+
+                    userData.SetProperty<bool>("NeedsACard", false);
                 }
 
 

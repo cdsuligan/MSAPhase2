@@ -42,6 +42,11 @@ namespace Contoso_Bank.DataModels
             await this.bankAccountTable.InsertAsync(bankaccount);
         }
 
+        public async Task DeleteAccount(BankAccount bankaccount)
+        {
+            await this.bankAccountTable.DeleteAsync(bankaccount);
+        }
+
         public async Task<List<BankAccount>> ViewAccountDetails()
         {
             return await this.bankAccountTable.ToListAsync();
