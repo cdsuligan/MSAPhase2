@@ -119,28 +119,27 @@ namespace Contoso_Bank
                     string strCurrentURL =
                     Url.Request.RequestUri.AbsoluteUri.Replace(@"api/messages", "");
 
-                    Activity replyToConversation = activity.CreateReply("Contoso Bank Information");
+                    Activity replyToConversation = activity.CreateReply("");
                     replyToConversation.Recipient = activity.From;
                     replyToConversation.Type = "message";
                     replyToConversation.Attachments = new List<Attachment>();
 
                     List<CardImage> cardImages = new List<CardImage>();
-                    string logoUrl = "contosoBankLogo.png";
-                    cardImages.Add(new CardImage(url: logoUrl));
+                    cardImages.Add(new CardImage(url: "https://cdn4.iconfinder.com/data/icons/web-development-5/500/internet-network-128.png"));
 
-                    List<CardAction> cardButtons = new List<CardAction>();
+                    List <CardAction> cardButtons = new List<CardAction>();
                     CardAction plButton = new CardAction()
                     {
                         Value = "https://www.facebook.com/Contoso-Bank-411866388937777/",
                         Type = "openUrl",
-                        Title = "Visit us on Facebook"
+                        Title = "VISIT US ON FACEBOOK"
                     };
                     cardButtons.Add(plButton);
 
                     ThumbnailCard plCard = new ThumbnailCard()
                     {
                         Title = "Contoso Bank",
-                        Subtitle = "Mexico's No.1 Bank.",
+                        Subtitle = "THE WORLD'S NO.1 BANK.",
                         Images = cardImages,
                         Buttons = cardButtons
                     };
@@ -207,7 +206,7 @@ namespace Contoso_Bank
 
                             //endOutput = "1 " + baseCurrency.ToUpper() + " = " + result.ToString() + " " + newCurrency.ToUpper() + ".";
 
-                            Activity conversionReply = activity.CreateReply($"");
+                            Activity conversionReply = activity.CreateReply($"DISCLAIMER: Foreign exchange rates are published by the European Central Bank.");
                             conversionReply.Recipient = activity.From;
                             conversionReply.Type = "message";
                             conversionReply.Attachments = new List<Attachment>();
@@ -220,7 +219,7 @@ namespace Contoso_Bank
                             {
                                 Value = "https://sdw.ecb.europa.eu/curConverter.do",
                                 Type = "openUrl",
-                                Title = "More Info"
+                                Title = "MORE INFO"
                             };
                             cardButtons.Add(plButton);
 
