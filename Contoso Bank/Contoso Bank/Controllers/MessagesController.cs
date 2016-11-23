@@ -8,8 +8,10 @@ using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 using Contoso_Bank.Models;
+using Contoso_Bank;
 using System.Text;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Contoso_Bank
 {
@@ -33,10 +35,10 @@ namespace Contoso_Bank
                 var userMessage = activity.Text; //The user's input
 
                 Dictionary<string, int> currencyCodes = new Dictionary<string, int>()
-                        { { "AUD", 1}, { "BGN", 1}, { "BRL", 3}, { "CAD", 1}, { "CHF", 1}, { "CNY", 6}, { "CZK", 2}, { "DKK", 6}, { "GBP", 0},
-                            { "HKD", 7}, { "HRK", 7}, { "HUF", 2}, { "IDR", 0}, { "ILS", 3}, { "INR", 0}, { "JPY", 1}, { "KRW", 1}, { "MXN", 2},
-                            { "MYR", 4}, { "NOK", 8}, { "NZD", 1}, { "PHP", 4}, { "PLN", 4}, { "RON", 4}, { "RUB", 6}, { "SEK", 9}, { "SGD", 1},
-                            { "THB", 3}, { "TRY", 3}, { "ZAR", 1}, { "EUR", 0}, { "USD", 1} };
+                    { { "AUD", 1}, { "BGN", 1}, { "BRL", 3}, { "CAD", 1}, { "CHF", 1}, { "CNY", 6}, { "CZK", 2}, { "DKK", 6}, { "GBP", 0},
+                        { "HKD", 7}, { "HRK", 7}, { "HUF", 2}, { "IDR", 0}, { "ILS", 3}, { "INR", 0}, { "JPY", 1}, { "KRW", 1}, { "MXN", 2},
+                        { "MYR", 4}, { "NOK", 8}, { "NZD", 1}, { "PHP", 4}, { "PLN", 4}, { "RON", 4}, { "RUB", 6}, { "SEK", 9}, { "SGD", 1},
+                        { "THB", 3}, { "TRY", 3}, { "ZAR", 1}, { "EUR", 0}, { "USD", 1} };
 
 
                 string endOutput = "Welcome to Contoso Bank! Would you like to 'convert currencies' or 'view stocks'?";
@@ -45,13 +47,18 @@ namespace Contoso_Bank
                 if (userData.GetProperty<bool>("SentGreeting"))
                 {
                     endOutput = "Hi again! What can I do for you, 'convert currencies' or 'view stocks'?";
+                    userData.SetProperty<bool>("NeedsACard", false);
                 }
 
                 else
                 {
+
                     userData.SetProperty("SentGreeting", true);
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                    userData.SetProperty<bool>("NeedsACard", false);
                 }
+
+
 
                 if (userMessage.ToLower().Contains("clear"))
                 {
@@ -59,12 +66,7 @@ namespace Contoso_Bank
                     await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
                 }
 
-                if (userMessage.ToLower().Contains("convert currencies"))
-                { //The user wants Currency Exchange
-                    endOutput = "Convert currencies from _?";
-                    userData.SetProperty("UserWantsCurrencyRates", true); //Sets "UserWantsCurrencyRates" to TRUE
-                    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-                }
+
 
                 if (userMessage.Length > 13)
                 {
@@ -79,29 +81,86 @@ namespace Contoso_Bank
                             endOutput = "Original currency is now set to " + defaultBase + ".";
                         }
 
-                        else {
+                        else
+                        {
                             endOutput = "Invalid currency code. Please try again.";
                         }
                     }
+                    userData.SetProperty("NeedsACard", false);
                 }
 
 
-                if (userMessage.ToLower().Equals("original")) {
+                if (userMessage.ToLower().Equals("original"))
+                {
                     string original = userData.GetProperty<string>("DefaultBase");   //Gets default original (base) currency code
 
                     if (original == null)
                     {
                         endOutput = "Original currency not assigned.";
+                        //userData.SetProperty("NeedsACard", false);
                     }
 
-                    else {
+                    else
+                    {
                         userData.SetProperty<string>("BaseCurrency", original); //Setting the BaseCurrency to userMessage (the user's input)
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
                         endOutput = "Convert from " + original + " to _?";
                     }
+                    userData.SetProperty("NeedsACard", false);
+
                 }
 
+
+                /**************************** CONTOSO BANK CARD STARTS ********************************/
+
+                if (userMessage.ToLower().Equals("cb") | userMessage.ToLower().Equals("contoso") | userMessage.ToLower().Equals("contoso bank"))
+                {
+                    string strCurrentURL =
+                    Url.Request.RequestUri.AbsoluteUri.Replace(@"api/messages", "");
+
+                    Activity replyToConversation = activity.CreateReply("Contoso Bank Information");
+                    replyToConversation.Recipient = activity.From;
+                    replyToConversation.Type = "message";
+                    replyToConversation.Attachments = new List<Attachment>();
+
+                    List<CardImage> cardImages = new List<CardImage>();
+                    string logoUrl = "contosoBankLogo.png";
+                    cardImages.Add(new CardImage(url: logoUrl));
+
+                    List<CardAction> cardButtons = new List<CardAction>();
+                    CardAction plButton = new CardAction()
+                    {
+                        Value = "https://www.facebook.com/Contoso-Bank-411866388937777/",
+                        Type = "openUrl",
+                        Title = "Visit us on Facebook"
+                    };
+                    cardButtons.Add(plButton);
+
+                    ThumbnailCard plCard = new ThumbnailCard()
+                    {
+                        Title = "Contoso Bank",
+                        Subtitle = "Mexico's No.1 Bank.",
+                        Images = cardImages,
+                        Buttons = cardButtons
+                    };
+
+                    Attachment plAttachment = plCard.ToAttachment();
+                    replyToConversation.Attachments.Add(plAttachment);
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
+
+                    return Request.CreateResponse(HttpStatusCode.OK);
+
+                }
+
+                /**************************** CONTOSO BANK CARD ENDS ********************************/
+
+                if (userMessage.ToLower().Contains("convert currencies"))
+                { //The user wants Currency Exchange
+                    endOutput = "Convert currencies from _?";
+                    userData.SetProperty("UserWantsCurrencyRates", true); //Sets "UserWantsCurrencyRates" to TRUE
+                    await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+                }
 
                 if (userData.GetProperty<bool>("UserWantsCurrencyRates") & (userMessage.Length == 3)) //Checks if the UserWantsCurrencyRates 
                 {
@@ -116,7 +175,6 @@ namespace Contoso_Bank
                         string baseCurrency = userData.GetProperty<string>("BaseCurrency");
 
                         endOutput = "Convert from " + baseCurrency + " to _?";
-
                     }
                 }
 
@@ -126,6 +184,7 @@ namespace Contoso_Bank
                     {
                         if (currencyCodes.ContainsKey(userMessage.ToUpper())) //Checks if valid Currency Code
                         {
+                            userData.SetProperty<bool>("NeedsACard", true);
                             string baseCurrency = userData.GetProperty<string>("BaseCurrency");
                             string newCurrency = userMessage;
                             double result = 0.0;
@@ -138,15 +197,44 @@ namespace Contoso_Bank
                             rootObject = JsonConvert.DeserializeObject<CurrencyExchange.RootObject>(x);
 
                             Dictionary<string, double> currencyCodesRootObjects = new Dictionary<string, double>(){
-                                { "AUD", rootObject.rates.AUD}, { "BGN", rootObject.rates.BGN}, { "BRL", rootObject.rates.BRL}, { "CAD", rootObject.rates.CAD}, { "CHF", rootObject.rates.CHF}, { "CNY", rootObject.rates.CNY}, { "CZK", rootObject.rates.CZK}, { "DKK", rootObject.rates.DKK}, { "GBP", rootObject.rates.GBP},
-    { "HKD", rootObject.rates.HKD}, { "HRK", rootObject.rates.HRK}, { "HUF", rootObject.rates.HUF}, { "IDR", rootObject.rates.IDR}, { "ILS", rootObject.rates.ILS}, { "INR", rootObject.rates.INR}, { "JPY", rootObject.rates.JPY}, { "KRW", rootObject.rates.KRW}, { "MXN", rootObject.rates.MXN},
-    { "MYR", rootObject.rates.MYR}, { "NOK", rootObject.rates.NOK}, { "NZD", rootObject.rates.NZD}, { "PHP", rootObject.rates.PHP}, { "PLN", rootObject.rates.PLN}, { "RON", rootObject.rates.RON}, { "RUB", rootObject.rates.RUB}, { "SEK", rootObject.rates.SEK}, { "SGD", rootObject.rates.SGD},
-    { "THB", rootObject.rates.THB}, { "TRY", rootObject.rates.TRY}, { "ZAR", rootObject.rates.ZAR}, { "EUR", rootObject.rates.EUR}, { "USD", rootObject.rates.USD}
-                            };
+                    { "AUD", rootObject.rates.AUD}, { "BGN", rootObject.rates.BGN}, { "BRL", rootObject.rates.BRL}, { "CAD", rootObject.rates.CAD}, { "CHF", rootObject.rates.CHF}, { "CNY", rootObject.rates.CNY}, { "CZK", rootObject.rates.CZK}, { "DKK", rootObject.rates.DKK}, { "GBP", rootObject.rates.GBP},
+{ "HKD", rootObject.rates.HKD}, { "HRK", rootObject.rates.HRK}, { "HUF", rootObject.rates.HUF}, { "IDR", rootObject.rates.IDR}, { "ILS", rootObject.rates.ILS}, { "INR", rootObject.rates.INR}, { "JPY", rootObject.rates.JPY}, { "KRW", rootObject.rates.KRW}, { "MXN", rootObject.rates.MXN},
+{ "MYR", rootObject.rates.MYR}, { "NOK", rootObject.rates.NOK}, { "NZD", rootObject.rates.NZD}, { "PHP", rootObject.rates.PHP}, { "PLN", rootObject.rates.PLN}, { "RON", rootObject.rates.RON}, { "RUB", rootObject.rates.RUB}, { "SEK", rootObject.rates.SEK}, { "SGD", rootObject.rates.SGD},
+{ "THB", rootObject.rates.THB}, { "TRY", rootObject.rates.TRY}, { "ZAR", rootObject.rates.ZAR}, { "EUR", rootObject.rates.EUR}, { "USD", rootObject.rates.USD}
+                };
 
                             result = currencyCodesRootObjects[newCurrency.ToUpper()];
 
-                            endOutput = "1 " + baseCurrency.ToUpper() + " is equivalent to " + result.ToString() + " " + newCurrency.ToUpper() + ".";
+                            //endOutput = "1 " + baseCurrency.ToUpper() + " = " + result.ToString() + " " + newCurrency.ToUpper() + ".";
+
+                            Activity conversionReply = activity.CreateReply($"");
+                            conversionReply.Recipient = activity.From;
+                            conversionReply.Type = "message";
+                            conversionReply.Attachments = new List<Attachment>();
+
+                            List<CardImage> cardImages = new List<CardImage>();
+                            cardImages.Add(new CardImage(url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Logo_European_Central_Bank.svg/2000px-Logo_European_Central_Bank.svg.png"));
+
+                            List<CardAction> cardButtons = new List<CardAction>();
+                            CardAction plButton = new CardAction()
+                            {
+                                Value = "https://sdw.ecb.europa.eu/curConverter.do",
+                                Type = "openUrl",
+                                Title = "More Info"
+                            };
+                            cardButtons.Add(plButton);
+
+                            ThumbnailCard plCard = new ThumbnailCard()
+                            {
+                                Title = baseCurrency.ToUpper() + " to " + newCurrency.ToUpper(),
+                                Subtitle = "1 " + baseCurrency.ToUpper() + " = " + result.ToString() + " " + newCurrency.ToUpper() + ".",
+                                Images = cardImages,
+                                Buttons = cardButtons
+                            };
+
+                            Attachment plAttachment = plCard.ToAttachment();
+                            conversionReply.Attachments.Add(plAttachment);
+                            await connector.Conversations.SendToConversationAsync(conversionReply);
 
                             userData.SetProperty<string>("BaseCurrency", "");
                             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
@@ -158,13 +246,21 @@ namespace Contoso_Bank
                             endOutput = "Invalid currency code. Please try again.";
                         }
                     }
+
+
                 }
 
+                if (!userData.GetProperty<bool>("NeedsACard"))
+                {
+                    Activity infoReply = activity.CreateReply(endOutput);
+                    await connector.Conversations.ReplyToActivityAsync(infoReply);
+                }
 
-                Activity infoReply = activity.CreateReply(endOutput);
-                await connector.Conversations.ReplyToActivityAsync(infoReply);
-
+                userData.SetProperty<bool>("NeedsACard", false);
             }
+
+
+
             else
             {
                 HandleSystemMessage(activity);
