@@ -12,6 +12,8 @@ using Contoso_Bank;
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.WindowsAzure.MobileServices;
+using Contoso_Bank.DataModels;
 
 namespace Contoso_Bank
 {
@@ -177,6 +179,29 @@ namespace Contoso_Bank
                     }
                 }
 
+                //USER WANTS TO VIEW BANK ACCOUNT DETAILS
+                //endOutput = userMessage.Length.ToString();
+                if (userMessage.Length == 19)
+                {
+                    endOutput = "HERE I AM 1";
+                    if (userMessage.ToLower().Substring(0,12).Equals("view account"))
+                    {
+                        List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
+                        endOutput = "";
+                        string acctNo = userMessage.Substring(13);
+
+                        foreach (BankAccount ba in bankaccounts)
+                        {
+                            if (ba.AcctNo == acctNo)
+                            {
+                                endOutput = "Hi " + ba.FirstName + ", " + ba.LastName + ", your remaining balance is $" + ba.Balance + ".";
+                            }
+                        }
+                    }
+                    userData.SetProperty<bool>("NeedsACard", false);
+                }
+
+
                 if (userData.GetProperty<string>("BaseCurrency") != null) //Checks if BaseCurrency exists
                 {
                     if ((userMessage.Length == 3) & (userMessage != userData.GetProperty<string>("BaseCurrency") & (userData.GetProperty<string>("BaseCurrency").Length == 3)))
@@ -245,8 +270,6 @@ namespace Contoso_Bank
                             endOutput = "Invalid currency code. Please try again.";
                         }
                     }
-
-
                 }
 
                 if (!userData.GetProperty<bool>("NeedsACard"))
@@ -257,8 +280,6 @@ namespace Contoso_Bank
 
                 userData.SetProperty<bool>("NeedsACard", false);
             }
-
-
 
             else
             {

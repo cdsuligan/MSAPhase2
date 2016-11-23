@@ -1,0 +1,8 @@
+Contoso Bank
+Server name: csul037contosobank.database.windows.net
+Server password: superMe2016
+
+SQLDatabase
+Name: ContosoBankDB
+Target server: csul037contosobank
+Collation: SQL_Latin1_General_CP1_CI_AS
