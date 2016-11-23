@@ -8,11 +8,7 @@ using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 using Contoso_Bank.Models;
-using Contoso_Bank;
-using System.Text;
 using System.Collections.Generic;
-using System.IO;
-using Microsoft.WindowsAzure.MobileServices;
 using Contoso_Bank.DataModels;
 
 namespace Contoso_Bank
@@ -180,10 +176,8 @@ namespace Contoso_Bank
                 }
 
                 //USER WANTS TO VIEW BANK ACCOUNT DETAILS
-                //endOutput = userMessage.Length.ToString();
                 if (userMessage.Length == 19)
                 {
-                    endOutput = "HERE I AM 1";
                     if (userMessage.ToLower().Substring(0,12).Equals("view account"))
                     {
                         List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
@@ -194,11 +188,88 @@ namespace Contoso_Bank
                         {
                             if (ba.AcctNo == acctNo)
                             {
-                                endOutput = "Hi " + ba.FirstName + ", " + ba.LastName + ", your remaining balance is $" + ba.Balance + ".";
+                                endOutput = "Hi " + ba.FirstName + " " + ba.LastName + ", your remaining balance is $" + ba.Balance + ".";
                             }
                         }
                     }
+
                     userData.SetProperty<bool>("NeedsACard", false);
+                }
+
+                //USER WANTS TO CREATE A NEW BANK ACCOUNT
+                if (userMessage.Length > 14) {
+
+                   
+
+                    if (userMessage.ToLower().Substring(0, 14).Equals("create account")) {
+                        List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
+                        int bankAcctSize = bankaccounts.Count();
+                        //endOutput = bankaccounts.ToString() + " bankAcctSize is: " + bankAcctSize;
+
+                        //endOutput = "";
+                        int newAcctNo;
+                        string fullName = userMessage.Substring(14);
+                        string[] fullNameList = fullName.Split(' ');
+
+                        string firstName = fullNameList[1];
+                        string lastName = fullNameList[2];
+                        int newID = 0;
+                        int intID = 0;
+
+                        //List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
+                        //int 
+                        Random rnd = new Random();
+                        newAcctNo = rnd.Next(100000, 1000000); // Creates a number between 100000 and 999999
+                        bool newAcctNoIsUnique = false;
+
+                        while (!newAcctNoIsUnique)
+                        {
+                            foreach (BankAccount ba in bankaccounts)
+                            {
+                                if (ba.AcctNo != newAcctNo.ToString())
+                                {
+                                    bankAcctSize -= 1;
+                                    if (bankAcctSize == 0)
+                                    {
+                                        newAcctNoIsUnique = true;
+                                    }
+                                }
+
+                                else
+                                {
+                                    newAcctNo = rnd.Next(100000, 1000000); // creates a number between 100000 and 999999
+                                    newAcctNoIsUnique = false;
+                                    bankAcctSize = bankaccounts.Count;
+                                    break;
+                                }
+
+                                int.TryParse(ba.ID, out intID);
+                                if (intID > newID) {
+                                    newID = intID;
+                                }
+
+                                //endOutput += ba.AcctNo.ToString() + " ";
+                            }
+                        }
+                        newID += 1;
+                        bankAcctSize = bankaccounts.Count();
+
+                        BankAccount bankaccount = new BankAccount()
+                        {
+                            ID = newID.ToString(),
+                            FirstName = firstName,
+                            LastName = lastName,
+                            Balance = 0.00,
+                            AcctNo = newAcctNo.ToString()
+                        };
+
+                        await AzureManager.AzureManagerInstance.CreateNewAccount(bankaccount);
+
+                        endOutput = "Congratulations, " + firstName + " " + lastName + "! Your new account number is " + newAcctNo.ToString() 
+                            + " and your current balance is: $0.00.";
+                        
+                        userData.SetProperty<bool>("NeedsACard", false);
+                    }
                 }
 
 

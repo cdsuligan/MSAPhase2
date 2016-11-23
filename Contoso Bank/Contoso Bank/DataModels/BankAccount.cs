@@ -11,9 +11,6 @@ namespace Contoso_Bank.DataModels
         [JsonProperty(PropertyName = "id")]
         public string ID { get; set; }
 
-        [JsonProperty(PropertyName = "index")]
-        public int Index { get; set; }
-
         [JsonProperty(PropertyName = "balance")]
         public double Balance { get; set; }
 
