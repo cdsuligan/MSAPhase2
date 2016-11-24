@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*************************************************/
+/*       AUTHOR: CIARAH DESIREE SULIGAN          */
+/*      MSA PHASE 2 - CONTOSO BANK (BOTS)        */
+/*************************************************/
+
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,13 +21,6 @@ namespace Contoso_Bank
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        /// <summary>
-        /// POST: api/Messages
-        /// Receive a message from a user and reply to it
-        /// </summary>
-        /// 
-
-
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
 
@@ -47,11 +45,7 @@ namespace Contoso_Bank
                         { "MYR", 4}, { "NOK", 8}, { "NZD", 1}, { "PHP", 4}, { "PLN", 4}, { "RON", 4}, { "RUB", 6}, { "SEK", 9}, { "SGD", 1},
                         { "THB", 3}, { "TRY", 3}, { "ZAR", 1}, { "EUR", 0}, { "USD", 1} };
 
-
-
                 string endOutput = "";
-
-                //string endOutput = "Welcome to Contoso Bank! Would you like to 'convert currencies', 'view account', 'clear'?";
 
                 // calculate something for us to return
                 if (userData.GetProperty<bool>("SentGreeting"))
@@ -122,8 +116,6 @@ namespace Contoso_Bank
                     endOutput = "Your personal data has been cleared.";
                     await stateClient.BotState.DeleteStateForUserAsync(activity.ChannelId, activity.From.Id);
                 }
-
-
 
                 if (userMessage.Length > 13)
                 {
@@ -238,7 +230,7 @@ namespace Contoso_Bank
                 //USER WANTS TO VIEW BANK ACCOUNT DETAILS
                 if (userMessage.Length == 19)
                 {
-                    if (userMessage.ToLower().Substring(0,12).Equals("view account"))
+                    if (userMessage.ToLower().Substring(0, 12).Equals("view account"))
                     {
                         List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
                         endOutput = "";
@@ -256,8 +248,9 @@ namespace Contoso_Bank
                     userData.SetProperty<bool>("NeedsACard", false);
                 }
 
-                
-                if (userMessage.Length > 14) {
+
+                if (userMessage.Length > 14)
+                {
                     //USER WANTS TO CREATE A NEW BANK ACCOUNT
                     if (userMessage.ToLower().Substring(0, 14).Equals("create account"))
                     {
@@ -343,7 +336,8 @@ namespace Contoso_Bank
                     }
 
                     //USER WANTS TO DEPOSIT INTO ACCOUNT
-                    else if (userMessage.ToLower().Substring(0, 7).Equals("deposit")) {
+                    else if (userMessage.ToLower().Substring(0, 7).Equals("deposit"))
+                    {
                         List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
                         string[] depositDetails = userMessage.Substring(8).Split();
                         string acctNo = depositDetails[0];
@@ -451,6 +445,7 @@ namespace Contoso_Bank
                             conversionReply.Attachments.Add(plAttachment);
                             await connector.Conversations.SendToConversationAsync(conversionReply);
 
+                            endOutput = "";
                             userData.SetProperty<string>("BaseCurrency", "");
                             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
@@ -463,7 +458,7 @@ namespace Contoso_Bank
                     }
                 }
 
-                if (!userData.GetProperty<bool>("NeedsACard") | endOutput != "")
+                if (!userData.GetProperty<bool>("NeedsACard") & endOutput != "")
                 {
                     Activity infoReply = activity.CreateReply(endOutput);
                     await connector.Conversations.ReplyToActivityAsync(infoReply);
@@ -479,7 +474,7 @@ namespace Contoso_Bank
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }
-        
+
         private Activity HandleSystemMessage(Activity message)
         {
             if (message.Type == ActivityTypes.DeleteUserData)
