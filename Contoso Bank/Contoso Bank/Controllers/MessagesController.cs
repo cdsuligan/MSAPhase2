@@ -276,7 +276,7 @@ namespace Contoso_Bank
                             if (ba.AcctNo == acctNo.ToString())
                             {
                                 await AzureManager.AzureManagerInstance.DeleteAccount(ba);
-                                endOutput = "Hi " + " " + ba.FirstName + " " + ba.LastName + ", your remaining balance of " + ba.Balance.ToString() +
+                                endOutput = "Hi, " + ba.FirstName + " " + ba.LastName + ", your remaining balance of $" + ba.Balance.ToString() +
                                     " has now been transferred to your secondary account. Your bank account with account number: " + ba.AcctNo
                                     + " has now been closed.";
                             }
@@ -299,7 +299,7 @@ namespace Contoso_Bank
                                 double newBalance = oldBalance + amount;
                                 ba.Balance = newBalance;
                                 await AzureManager.AzureManagerInstance.Deposit(ba);
-                                endOutput = "Hi " + " " + ba.FirstName + " " + ba.LastName + "! Your deposit has been completed. Balance from $" + oldBalance.ToString()
+                                endOutput = "Hi, " + ba.FirstName + " " + ba.LastName + "! Your deposit has been completed. Balance from $" + oldBalance.ToString()
                                     + " to $" + ba.Balance.ToString() + ".";
                             }
                         }
@@ -323,7 +323,7 @@ namespace Contoso_Bank
                                 double newBalance = oldBalance - amount;
                                 ba.Balance = newBalance;
                                 await AzureManager.AzureManagerInstance.Deposit(ba);
-                                endOutput = "Hi " + " " + ba.FirstName + " " + ba.LastName + "! Your withdrawal has been completed. Balance from $" + oldBalance.ToString()
+                                endOutput = "Hi, " + ba.FirstName + " " + ba.LastName + "! Your withdrawal has been completed. Balance from $" + oldBalance.ToString()
                                     + " to $" + ba.Balance.ToString() + ".";
                             }
                         }
