@@ -298,15 +298,39 @@ namespace Contoso_Bank
                                 double newBalance = oldBalance + amount;
                                 ba.Balance = newBalance;
                                 await AzureManager.AzureManagerInstance.Deposit(ba);
-                                endOutput = "Hi " + " " + ba.FirstName + " " + ba.LastName + "! Your previous balance was $" + oldBalance.ToString()
-                                    + ". It is now $" + ba.Balance.ToString() + ".";
+                                endOutput = "Hi " + " " + ba.FirstName + " " + ba.LastName + "! Your deposit has been completed. Balance from $" + oldBalance.ToString()
+                                    + " to $" + ba.Balance.ToString() + ".";
                             }
                         }
 
                     }
 
 
-                        userData.SetProperty<bool>("NeedsACard", false);
+                    else if (userMessage.ToLower().Substring(0, 8).Equals("withdraw"))
+                    {
+                        List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
+                        string[] depositDetails = userMessage.Substring(9).Split();
+                        string acctNo = depositDetails[0];
+                        double amount; //Amount to be withdrawn
+                        double.TryParse(depositDetails[1], out amount);
+
+                        foreach (BankAccount ba in bankaccounts)
+                        {
+                            if (ba.AcctNo == acctNo.ToString())
+                            {
+                                double oldBalance = ba.Balance;
+                                double newBalance = oldBalance - amount;
+                                ba.Balance = newBalance;
+                                await AzureManager.AzureManagerInstance.Deposit(ba);
+                                endOutput = "Hi " + " " + ba.FirstName + " " + ba.LastName + "! Your withdrawal has been completed. Balance from $" + oldBalance.ToString()
+                                    + " to $" + ba.Balance.ToString() + ".";
+                            }
+                        }
+
+                    }
+
+
+                    userData.SetProperty<bool>("NeedsACard", false);
                 }
 
 
