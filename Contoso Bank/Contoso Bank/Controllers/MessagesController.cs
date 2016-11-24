@@ -20,17 +20,26 @@ namespace Contoso_Bank
         /// POST: api/Messages
         /// Receive a message from a user and reply to it
         /// </summary>
+        /// 
+
+
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
 
             if (activity.Type == ActivityTypes.Message)
             {
+
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
 
                 StateClient stateClient = activity.GetStateClient(); //Saves bot state
                 BotData userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id); //Invoking state client
 
                 var userMessage = activity.Text; //The user's input
+
+                List<String> choices = new List<String>();
+                choices.Add("Convert Currencies");
+                choices.Add("View Account");
+                choices.Add("Clear");
 
                 Dictionary<string, int> currencyCodes = new Dictionary<string, int>()
                     { { "AUD", 1}, { "BGN", 1}, { "BRL", 3}, { "CAD", 1}, { "CHF", 1}, { "CNY", 6}, { "CZK", 2}, { "DKK", 6}, { "GBP", 0},
@@ -39,24 +48,74 @@ namespace Contoso_Bank
                         { "THB", 3}, { "TRY", 3}, { "ZAR", 1}, { "EUR", 0}, { "USD", 1} };
 
 
-                string endOutput = "Welcome to Contoso Bank! Would you like to 'convert currencies' or 'view stocks'?";
+
+                string endOutput = "";
+
+                //string endOutput = "Welcome to Contoso Bank! Would you like to 'convert currencies', 'view account', 'clear'?";
 
                 // calculate something for us to return
                 if (userData.GetProperty<bool>("SentGreeting"))
                 {
-                    endOutput = "Hi again! What can I do for you, 'convert currencies' or 'view stocks'?";
+                    endOutput = "Welcome back! Please enter a command.";
                     userData.SetProperty<bool>("NeedsACard", false);
                 }
 
                 else
                 {
 
+                    Activity replyToConversation = activity.CreateReply("Welcome to Contoso Bank! Please select an option below or type a command.");
+                    replyToConversation.Recipient = activity.From;
+                    replyToConversation.Type = "message";
+
+                    replyToConversation.Attachments = new List<Attachment>();
+                    Attachment messageOptions = new Attachment();
+
+                    List<CardImage> cardImages = new List<CardImage>();
+                    cardImages.Add(new CardImage(url: "https://cdn4.iconfinder.com/data/icons/web-development-5/500/internet-network-128.png"));
+
+                    List<CardAction> cardButtons = new List<CardAction>();
+                    CardAction convertCurrencies = new CardAction()
+                    {
+                        Value = "convert currencies",
+                        Type = "postBack",
+                        Title = "Convert Currencies"
+                    };
+                    cardButtons.Add(convertCurrencies);
+
+                    CardAction contoso = new CardAction()
+                    {
+                        Value = "contoso",
+                        Type = "postBack",
+                        Title = "Contoso Bank"
+                    };
+                    cardButtons.Add(contoso);
+
+                    CardAction clear = new CardAction()
+                    {
+                        Value = "clear",
+                        Type = "postBack",
+                        Title = "Clear"
+                    };
+                    cardButtons.Add(clear);
+
+                    ThumbnailCard plCard = new ThumbnailCard()
+                    {
+                        Title = "Contoso Bank",
+                        Images = cardImages,
+                        Buttons = cardButtons
+                    };
+
                     userData.SetProperty("SentGreeting", true);
                     await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+
+                    Attachment plAttachment = plCard.ToAttachment();
+                    replyToConversation.Attachments.Add(plAttachment);
+                    await connector.Conversations.SendToConversationAsync(replyToConversation);
+
+
                     userData.SetProperty<bool>("NeedsACard", false);
+                    //return Request.CreateResponse(HttpStatusCode.OK);
                 }
-
-
 
                 if (userMessage.ToLower().Contains("clear"))
                 {
@@ -120,6 +179,7 @@ namespace Contoso_Bank
                     Activity replyToConversation = activity.CreateReply("");
                     replyToConversation.Recipient = activity.From;
                     replyToConversation.Type = "message";
+
                     replyToConversation.Attachments = new List<Attachment>();
 
                     List<CardImage> cardImages = new List<CardImage>();
@@ -161,7 +221,6 @@ namespace Contoso_Bank
 
                 if (userData.GetProperty<bool>("UserWantsCurrencyRates") & (userMessage.Length == 3)) //Checks if the UserWantsCurrencyRates 
                 {
-                    endOutput = userData.GetProperty<bool>("UserWantsCurrencyRates").ToString() + " length: " + userMessage.Length.ToString();
 
                     if (currencyCodes.ContainsKey(userMessage.ToUpper())) //Checks if valid Currency Code
                     {
@@ -362,7 +421,6 @@ namespace Contoso_Bank
 
                             result = currencyCodesRootObjects[newCurrency.ToUpper()];
 
-                            //endOutput = "1 " + baseCurrency.ToUpper() + " = " + result.ToString() + " " + newCurrency.ToUpper() + ".";
 
                             Activity conversionReply = activity.CreateReply($"DISCLAIMER: Foreign exchange rates are published by the European Central Bank.");
                             conversionReply.Recipient = activity.From;
@@ -405,7 +463,7 @@ namespace Contoso_Bank
                     }
                 }
 
-                if (!userData.GetProperty<bool>("NeedsACard"))
+                if (!userData.GetProperty<bool>("NeedsACard") | endOutput != "")
                 {
                     Activity infoReply = activity.CreateReply(endOutput);
                     await connector.Conversations.ReplyToActivityAsync(infoReply);
