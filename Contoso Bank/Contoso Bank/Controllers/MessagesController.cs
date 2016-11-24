@@ -282,7 +282,31 @@ namespace Contoso_Bank
                         }
                     }
 
-                    userData.SetProperty<bool>("NeedsACard", false);
+                    //USER WANTS TO DEPOSIT INTO ACCOUNT
+                    else if (userMessage.ToLower().Substring(0, 7).Equals("deposit")) {
+                        List<BankAccount> bankaccounts = await AzureManager.AzureManagerInstance.ViewAccountDetails();
+                        string[] depositDetails = userMessage.Substring(8).Split();
+                        string acctNo = depositDetails[0];
+                        double amount; //Amount to be deposited
+                        double.TryParse(depositDetails[1], out amount);
+
+                        foreach (BankAccount ba in bankaccounts)
+                        {
+                            if (ba.AcctNo == acctNo.ToString())
+                            {
+                                double oldBalance = ba.Balance;
+                                double newBalance = oldBalance + amount;
+                                ba.Balance = newBalance;
+                                await AzureManager.AzureManagerInstance.Deposit(ba);
+                                endOutput = "Hi " + " " + ba.FirstName + " " + ba.LastName + "! Your previous balance was $" + oldBalance.ToString()
+                                    + ". It is now $" + ba.Balance.ToString() + ".";
+                            }
+                        }
+
+                    }
+
+
+                        userData.SetProperty<bool>("NeedsACard", false);
                 }
 
 

@@ -54,12 +54,12 @@ namespace Contoso_Bank.DataModels
 
         public async Task Deposit(BankAccount bankaccount)
         {
-            await this.bankAccountTable.InsertAsync(bankaccount);
+            await this.bankAccountTable.UpdateAsync(bankaccount);
         }
 
         public async Task Withdraw(BankAccount bankaccount)
         {
-            await this.bankAccountTable.InsertAsync(bankaccount);
+            await this.bankAccountTable.UpdateAsync(bankaccount);
         }
     }
 }
