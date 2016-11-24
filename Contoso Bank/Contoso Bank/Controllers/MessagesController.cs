@@ -125,7 +125,7 @@ namespace Contoso_Bank
                     List<CardImage> cardImages = new List<CardImage>();
                     cardImages.Add(new CardImage(url: "https://cdn4.iconfinder.com/data/icons/web-development-5/500/internet-network-128.png"));
 
-                    List <CardAction> cardButtons = new List<CardAction>();
+                    List<CardAction> cardButtons = new List<CardAction>();
                     CardAction plButton = new CardAction()
                     {
                         Value = "https://www.facebook.com/Contoso-Bank-411866388937777/",
@@ -161,10 +161,11 @@ namespace Contoso_Bank
 
                 if (userData.GetProperty<bool>("UserWantsCurrencyRates") & (userMessage.Length == 3)) //Checks if the UserWantsCurrencyRates 
                 {
+                    endOutput = userData.GetProperty<bool>("UserWantsCurrencyRates").ToString() + " length: " + userMessage.Length.ToString();
+
                     if (currencyCodes.ContainsKey(userMessage.ToUpper())) //Checks if valid Currency Code
                     {
                         userData.SetProperty<string>("BaseCurrency", userMessage); //Setting the BaseCurrency to userMessage (the user's input)
-                        await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
 
                         userData.SetProperty("UserWantsCurrencyRates", false);
                         await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
